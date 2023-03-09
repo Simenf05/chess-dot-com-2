@@ -13,6 +13,9 @@ const start_grid = [
     ["br", "bn", "bb", "bq", "bk", "bb", "bn", "br"],
 ]
 
+let lastMove = null
+let selectedCoord = null
+
 function makeGrid(dims) {
 
     for (let i = dims[0]; i > 0; i--) {
@@ -40,31 +43,77 @@ function makeGrid(dims) {
     }
 }
 
-const setImg = (name, coord) => document.getElementById(coord).innerHTML = `<img src="bilder/${name}.png">`
+const setPiece = (piece, coord) => {
+    const box = document.getElementById(coord)
+    box.innerHTML = `<img src="bilder/${piece}.png">`
+    box.setAttribute("data-value", piece)
+}
 
-
-
+const clearCoord = (coord) => {
+    const box = document.getElementById(coord)
+    box.innerHTML = ""
+    box.setAttribute("data-value", "")
+}
 
 
 function setUpPieces(start_grid) {
 
     start_grid.forEach((row, i) => {
-        
-
         row.forEach((value, j) => {
-            
-            value ? setImg(value, `${alphabet[j]}${i + 1}`) : ""
 
+            value ? setPiece(value, `${alphabet[j]}${i + 1}`) : clearCoord(`${alphabet[j]}${i + 1}`)
+        
         });
     });
 }
 
 
-function clickBox(e) {
-    console.log(e.target);
+const unselect = (selectedCoord) => {
+    const selected = document.getElementById(selectedCoord)
+    let newClassName = ""
+
+    selected.classList.forEach((classname, i) => {
+        if (classname === "selected") {return}
+
+        newClassName += i === 0 ? `${classname}` : ` ${classname}`
+    });
+
+    selected.className = newClassName
 }
 
-function movePiece(e) {
+
+
+function clickBox(e) {
+
+    if (!(e.target.getAttribute("data-value"))) {
+        if (selectedCoord === null) {return}
+        movePiece(e, selectedCoord)
+        selectedCoord = null
+        return
+    }
+
+    
+
+
+    if (!(selectedCoord === null)) {
+        unselect(selectedCoord)
+    }   
+
+
+    e.target.className += " selected"
+    selectedCoord = e.target.id
+}
+
+function movePiece(e, selectedCoord) {
+    
+    if (pawnMove(selectedCoord, e.target.id)) {
+        console.log("hei");
+        return
+    }
+    const selectedPiece = document.getElementById(selectedCoord)
+    setPiece(selectedPiece.getAttribute("data-value"), e.target.id)
+    clearCoord(selectedCoord)
+    unselect(selectedCoord)
 
 }
 
