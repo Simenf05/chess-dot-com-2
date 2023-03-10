@@ -106,14 +106,16 @@ function clickBox(e) {
 
 function movePiece(e, selectedCoord) {
     
-    if (pawnMove(selectedCoord, e.target.id)) {
-        console.log("hei");
-        return
-    }
     const selectedPiece = document.getElementById(selectedCoord)
-    setPiece(selectedPiece.getAttribute("data-value"), e.target.id)
-    clearCoord(selectedCoord)
+    const piece = selectedPiece.getAttribute("data-value")
+
+    if (checkMove(piece, selectedCoord, e.target.id)) {
+        setPiece(piece, e.target.id)
+        clearCoord(selectedCoord)
+    }
+
     unselect(selectedCoord)
+    return
 
 }
 
